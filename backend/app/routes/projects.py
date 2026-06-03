@@ -35,7 +35,7 @@ from app.services.transcription import transcribe_audio
 
 router = APIRouter(prefix="/api/projects", tags=["projects"])
 
-SAMPLE_DIR = Path(__file__).resolve().parents[3] / "sample-data"
+SAMPLE_DIR = Path(__file__).resolve().parents[2] / "sample-data"
 
 
 def _get_project_or_404(project_id: UUID) -> dict:

@@ -100,5 +100,5 @@ backend/app/
 frontend/
   components/ chat-panel, voice-panel
 supabase/migrations/
-sample-data/  text samples for "Try sample content"
+backend/sample-data/  text samples for "Try sample content"
 ```
