@@ -1,0 +1,15 @@
+Interviewer: Thanks for joining today. Can you walk me through your first experience with the product?
+
+Participant: Honestly, the setup took me almost two days. I wasn't sure what to do next after I signed up. The onboarding checklist helped a little, but some steps linked to docs that were out of date.
+
+Interviewer: What would have made onboarding easier?
+
+Participant: A guided wizard with one task at a time. I kept jumping between settings and integrations and got lost. I also wish there was a short video for the first project setup.
+
+Interviewer: Did you reach out to support?
+
+Participant: Yes, support was friendly but slow. I waited about a day for a reply while I was blocked on connecting our CRM.
+
+Interviewer: Anything else on onboarding?
+
+Participant: The product is powerful once you're in, but the first hour feels overwhelming. A sample project with fake data would have been perfect.

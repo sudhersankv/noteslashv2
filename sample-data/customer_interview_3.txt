@@ -1,0 +1,19 @@
+Interviewer: What tools do you use alongside our platform?
+
+Participant: Slack is where our team lives. We copy insights into channels manually today.
+
+Interviewer: What integrations do you want?
+
+Participant: Native Slack integration is top of my list. Also CSV export for our research repository, and ideally Figma for sharing highlight reels.
+
+Interviewer: Any workflow pain points?
+
+Participant: Finding old quotes across interviews is hard. We have transcripts in Google Drive and nobody wants to search them.
+
+Interviewer: Feature requests?
+
+Participant: Bulk tagging, shared insight libraries, and a way to clip audio/video moments. Oh, and better mobile review for stakeholders.
+
+Interviewer: Would you recommend us?
+
+Participant: Yes, for teams doing serious interview research. The synthesis features are strong once data is in the system. Just fix integrations and search.

@@ -1,0 +1,19 @@
+Interviewer: How do you feel about our pricing?
+
+Participant: For our small team of eight, the starter plan is affordable. We pay less than we did for the old tool.
+
+Interviewer: Any concerns?
+
+Participant: When we looked at the enterprise tier for SSO and audit logs, the jump felt steep. Our finance lead said it was almost double what competitors quoted for similar features.
+
+Interviewer: Would you upgrade?
+
+Participant: Maybe next year if we grow past fifty seats. Right now the mid-tier is fine, but missing advanced permissions is annoying.
+
+Interviewer: Compared to competitors?
+
+Participant: Notion and spreadsheets are cheaper but manual. Your automation saves us time, so I can justify the cost to my manager—for small teams at least.
+
+Interviewer: Anything else?
+
+Participant: Transparent pricing page would help. I had to book a sales call to understand seat minimums on enterprise.
