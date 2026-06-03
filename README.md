@@ -37,7 +37,7 @@ Required in `backend/.env`:
 - `SUPABASE_SERVICE_ROLE_KEY`
 
 Optional:
-- `OPENAI_REALTIME_MODEL=gpt-4o-realtime-preview`
+- `OPENAI_REALTIME_MODEL=gpt-realtime`
 - `OPENAI_WHISPER_MODEL=whisper-1`
 - `MAX_AUDIO_SIZE_MB=25`
 

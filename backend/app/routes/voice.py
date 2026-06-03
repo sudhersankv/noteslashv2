@@ -44,11 +44,13 @@ def voice_session(project_id: UUID):
             detail=f"Could not create voice session: {e}",
         ) from e
 
-    client_secret = session.get("client_secret", {})
+    # GA API: top-level `value` (ek_...); legacy beta used nested client_secret
+    secret_value = session.get("value") or session.get("client_secret", {}).get("value", "")
+    session_obj = session.get("session") or {}
     return VoiceSessionResponse(
-        client_secret=client_secret.get("value", ""),
-        expires_at=client_secret.get("expires_at"),
-        model=session.get("model", ""),
+        client_secret=secret_value,
+        expires_at=session.get("expires_at") or session.get("client_secret", {}).get("expires_at"),
+        model=session_obj.get("model") or session.get("model", ""),
     )
 
 

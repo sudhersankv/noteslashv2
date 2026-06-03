@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     openai_embedding_model: str = "text-embedding-3-small"
     openai_chat_model: str = "gpt-4.1-mini"
     openai_whisper_model: str = "whisper-1"
-    openai_realtime_model: str = "gpt-4o-realtime-preview"
+    openai_realtime_model: str = "gpt-realtime"
     openai_tts_voice: str = "verse"
 
     supabase_url: str = ""

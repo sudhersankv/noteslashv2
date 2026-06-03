@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { api, REALTIME_MODEL } from "@/lib/api";
+import { api } from "@/lib/api";
+import {
+  getMicrophoneStream,
+  listAudioInputs,
+  microphoneUnavailableReason,
+  type AudioInput,
+} from "@/lib/microphone";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Spinner } from "./ui/spinner";
@@ -14,11 +20,22 @@ export function VoicePanel({ projectId }: Props) {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const [transcript, setTranscript] = useState<string[]>([]);
+  const [audioInputs, setAudioInputs] = useState<AudioInput[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string>("");
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const dcRef = useRef<RTCDataChannel | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const micStreamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
+    const blocked = microphoneUnavailableReason();
+    if (blocked) {
+      setError(blocked);
+      return;
+    }
+    listAudioInputs()
+      .then(setAudioInputs)
+      .catch(() => {});
     return () => disconnect();
   }, []);
 
@@ -64,8 +81,12 @@ export function VoicePanel({ projectId }: Props) {
         audioEl.srcObject = e.streams[0];
       };
 
-      const ms = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const ms = await getMicrophoneStream(selectedDeviceId || undefined);
+      micStreamRef.current = ms;
       ms.getTracks().forEach((track) => pc.addTrack(track, ms));
+
+      const inputs = await listAudioInputs();
+      if (inputs.length) setAudioInputs(inputs);
 
       const dc = pc.createDataChannel("oai-events");
       dcRef.current = dc;
@@ -76,10 +97,16 @@ export function VoicePanel({ projectId }: Props) {
           if (msg.type === "response.function_call_arguments.done") {
             await handleToolCall(msg.name, msg.arguments, msg.call_id);
           }
-          if (msg.type === "response.audio_transcript.done") {
+          if (
+            msg.type === "response.audio_transcript.done" ||
+            msg.type === "response.output_audio_transcript.done"
+          ) {
             log(`Noteslash: ${msg.transcript}`);
           }
-          if (msg.type === "conversation.item.input_audio_transcription.completed") {
+          if (
+            msg.type === "conversation.item.input_audio_transcription.completed" ||
+            msg.type === "conversation.item.input_audio_transcription.done"
+          ) {
             log(`You: ${msg.transcript}`);
           }
         } catch {
@@ -90,18 +117,14 @@ export function VoicePanel({ projectId }: Props) {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
 
-      const model = session.model || REALTIME_MODEL;
-      const sdpResponse = await fetch(
-        `https://api.openai.com/v1/realtime?model=${encodeURIComponent(model)}`,
-        {
-          method: "POST",
-          body: offer.sdp,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/sdp",
-          },
-        }
-      );
+      const sdpResponse = await fetch("https://api.openai.com/v1/realtime/calls", {
+        method: "POST",
+        body: offer.sdp,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/sdp",
+        },
+      });
 
       if (!sdpResponse.ok) {
         throw new Error(`Realtime connection failed: ${sdpResponse.status}`);
@@ -122,6 +145,8 @@ export function VoicePanel({ projectId }: Props) {
     pcRef.current?.close();
     dcRef.current = null;
     pcRef.current = null;
+    micStreamRef.current?.getTracks().forEach((t) => t.stop());
+    micStreamRef.current = null;
     if (audioRef.current) {
       audioRef.current.srcObject = null;
       audioRef.current = null;
@@ -133,8 +158,26 @@ export function VoicePanel({ projectId }: Props) {
     <div className="space-y-4">
       <p className="text-sm text-neutral-600">
         Talk with Noteslash about your library. The assistant searches your indexed content before
-        answering.
+        answering. Requires a working microphone and HTTPS in production.
       </p>
+      {audioInputs.length > 1 && status !== "connected" && (
+        <label className="block text-sm text-neutral-600">
+          Microphone
+          <select
+            className="mt-1 w-full max-w-md rounded-md border border-neutral-300 bg-white px-3 py-2 text-neutral-900"
+            value={selectedDeviceId}
+            onChange={(e) => setSelectedDeviceId(e.target.value)}
+            disabled={status === "connecting"}
+          >
+            <option value="">System default</option>
+            {audioInputs.map((d) => (
+              <option key={d.deviceId} value={d.deviceId}>
+                {d.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       <div className="flex items-center gap-3">
         {status === "connected" ? (
           <Badge className="bg-emerald-100 text-emerald-800">Live</Badge>

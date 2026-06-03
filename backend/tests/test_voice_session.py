@@ -16,8 +16,9 @@ def test_voice_session_returns_secret(mock_sb, mock_get_project, mock_session):
     sb.table.return_value.select.return_value.eq.return_value.execute.return_value = MagicMock(count=5)
 
     mock_session.return_value = {
-        "client_secret": {"value": "ek_test_secret", "expires_at": 123},
-        "model": "gpt-4o-realtime-preview",
+        "value": "ek_test_secret",
+        "expires_at": 123,
+        "session": {"model": "gpt-realtime"},
     }
 
     client = TestClient(app)
