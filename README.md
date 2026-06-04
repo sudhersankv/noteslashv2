@@ -91,6 +91,11 @@ cd backend
 - **Frontend:** Vercel, root `frontend`, set `NEXT_PUBLIC_API_URL`
 - **Backend:** Railway/Render, root `backend`, set env vars + `CORS_ORIGINS`
 
+## Architecture and video
+
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — deployment diagrams, pipelines, API map, DB schema
+- **[docs/VIDEO_SCRIPT.md](docs/VIDEO_SCRIPT.md)** — 3–4 min walkthrough script
+
 ## Project structure
 
 ```
