@@ -79,11 +79,6 @@ def create_sample_project():
     return SampleResponse(project=ProjectResponse(id=project["id"], name=project["name"]))
 
 
-@router.post("/demo", response_model=SampleResponse, deprecated=True)
-def create_demo_project_legacy():
-    return create_sample_project()
-
-
 async def _handle_upload_file(upload: UploadFile, pid: str) -> None:
     if not upload.filename:
         return

@@ -1,20 +1,15 @@
 # Supabase setup
 
-## 1. Create project
+1. Create a project at [supabase.com/dashboard](https://supabase.com/dashboard).
+2. Run migrations in **SQL Editor**, in order:
+   - `migrations/001_enable_pgvector.sql`
+   - `migrations/002_initial_schema.sql`
+   - `migrations/003_noteslash_audio.sql`
+3. Copy **Project URL** and **service_role** key into `backend/.env`.
 
-1. Go to [supabase.com/dashboard](https://supabase.com/dashboard).
-2. New project → note **Project URL** and **service role** key (Settings → API).
+## Vector index (optional)
 
-## 2. Run migrations
-
-In **SQL Editor**, run files in order:
-
-1. `migrations/001_enable_pgvector.sql`
-2. `migrations/002_initial_schema.sql`
-
-## 3. Vector index (after first data load)
-
-IVFFlat works best with hundreds+ rows. After seeding chunks:
+After you have hundreds of chunks, add an IVFFlat index for faster search:
 
 ```sql
 create index chunks_embedding_idx on public.chunks
@@ -22,10 +17,7 @@ create index chunks_embedding_idx on public.chunks
   with (lists = 100);
 ```
 
-For small demos, sequential scan is fine without this index.
+## Security
 
-## 4. Security
-
-- Backend uses **service role** key only on the server.
-- For a public demo without auth, keep RLS disabled or add policies later.
-- Never expose `SUPABASE_SERVICE_ROLE_KEY` to the frontend.
+- Use the **service role** key only on the backend server.
+- Enable Row Level Security and policies before any multi-user production deployment.

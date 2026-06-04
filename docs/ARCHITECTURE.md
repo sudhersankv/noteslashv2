@@ -1,6 +1,6 @@
 # Noteslash — System Architecture
 
-Reference for demos, onboarding, and video walkthroughs. Repo: [github.com/sudhersankv/noteslashv2](https://github.com/sudhersankv/noteslashv2)
+Technical reference for the Noteslash platform. Repository: [github.com/sudhersankv/noteslashv2](https://github.com/sudhersankv/noteslashv2)
 
 ---
 
@@ -116,7 +116,7 @@ flowchart LR
 
 ---
 
-## 4. User journey (for video — follow this path)
+## 4. User journey
 
 ```mermaid
 flowchart TD
@@ -388,23 +388,7 @@ Same DB enum (`theme`, `pain_point`, `feature_request`); labels adapt via [`fron
 
 ---
 
-## 12. Video recording script (suggested 3–4 min)
-
-| Time | Scene | Say / Show |
-|------|-------|------------|
-| 0:00 | Landing | “Noteslash turns any audio into searchable, cited notes.” |
-| 0:20 | How it works | Walk through 4 steps on homepage |
-| 0:40 | Try sample | Click **Try sample content** → processing screen |
-| 1:00 | Architecture (optional) | Show this doc diagram §5 pipeline |
-| 1:30 | Overview | Themes/quotes with evidence; mention auto-categorization badge |
-| 2:00 | Chat | Ask “What are the main topics?” → point at citations |
-| 2:30 | Voice | Start voice, ask a question, show transcript log |
-| 3:00 | Report | Generate + download markdown |
-| 3:20 | Stack | “Next.js on Vercel, FastAPI on Railway, Supabase pgvector, OpenAI Whisper + Realtime” |
-
----
-
-## 13. Repository layout (post-pull)
+## 12. Repository layout
 
 ```
 noteslashv2/
@@ -420,17 +404,15 @@ noteslashv2/
 │   ├── sample-data/          # bundled .txt for /sample endpoint
 │   └── tests/
 ├── supabase/migrations/
-└── docs/
-    ├── ARCHITECTURE.md       # this file
-    └── VIDEO_SCRIPT.md
+└── docs/ARCHITECTURE.md
 ```
 
 ---
 
-## 14. Design principles (talking points)
+## 13. Design principles
 
 1. **Media-agnostic intelligence** — same RAG stack for podcast, audiobook, or interview text.
 2. **Transcribe once, discard audio** — lower storage cost; text is the source of truth.
-3. **Citations from DB** — reduces hallucination risk in demo and production.
-4. **Voice security** — Realtime token is ephemeral; RAG tool hits Railway, not OpenAI directly for embeddings.
-5. **Sync processing** — fine for demo scale (3–10 files); async queue is the natural scale-up path.
+3. **Citations from DB** — answers reference stored chunk text, not model-paraphrased quotes.
+4. **Voice security** — Realtime token is ephemeral; RAG runs on the backend API.
+5. **Sync processing** — suitable for small libraries; async jobs are the scale-up path.

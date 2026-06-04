@@ -1,4 +1,4 @@
--- Research Intelligence Agent — core schema
+-- Noteslash — core schema
 -- Run in Supabase SQL Editor or via CLI after 001_enable_pgvector.sql
 
 create table if not exists public.projects (

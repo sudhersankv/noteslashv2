@@ -1,49 +1,59 @@
 # Noteslash
 
-Turn any audio into searchable, cited notes. Upload podcasts, audiobooks, interviews, or text — Noteslash transcribes, categorizes, indexes your content, and lets you **chat** or **talk** with it.
+Turn any audio or text into a **searchable library** with cited answers. Upload podcasts, audiobooks, interviews, or transcripts—Noteslash transcribes, categorizes, indexes your content, and lets you explore it through **Overview**, **Chat**, **Voice**, or exported **Reports**.
 
 ## Features
 
-- **Audio upload** — mp3, wav, m4a, webm, ogg (transcribed via OpenAI Whisper on upload)
-- **Text upload** — paste or upload `.txt`
-- **Auto-categorization** — podcast, interview, audiobook, lecture, or other
-- **Semantic index** — pgvector embeddings for retrieval
-- **Overview** — topics, quotes, and takeaways (labels adapt by content type)
-- **Chat** — multi-turn Q&A with citations
-- **Voice** — full-duplex conversation via OpenAI Realtime API + library search tool
-- **Report** — export markdown summary
+- **Multi-format ingest** — mp3, wav, m4a, webm, ogg, and `.txt` (Whisper transcription on upload for audio)
+- **Auto-categorization** — podcast, interview, audiobook, lecture, or other, with tags
+- **Semantic search** — pgvector-backed retrieval over chunked content
+- **Structured insights** — topics, quotes, and takeaways with evidence linked to source passages
+- **Chat** — multi-turn Q&A with inline citations
+- **Voice** — full-duplex conversation via OpenAI Realtime, grounded with a `search_library` tool
+- **Reports** — one-click markdown export
 
-## Stack
+## Tech stack
 
-| Layer | Tech |
-|-------|------|
+| Layer | Technology |
+|-------|------------|
 | Frontend | Next.js 14, TypeScript, Tailwind |
-| Backend | FastAPI, Python |
-| Database | Supabase Postgres + pgvector |
-| AI | OpenAI Whisper, embeddings, chat, Realtime |
+| API | FastAPI, Python 3.11+ |
+| Database | Supabase (Postgres + pgvector) |
+| AI | OpenAI Whisper, embeddings, GPT-4.1-mini, Realtime API |
 
-## Setup
+## Quick start
 
-### 1. Environment
+### Prerequisites
+
+- Node.js 20+
+- Python 3.11+
+- [Supabase](https://supabase.com) project
+- [OpenAI](https://platform.openai.com) API key (Realtime access required for Voice)
+
+### 1. Clone and configure
 
 ```bash
+git clone https://github.com/sudhersankv/noteslashv2.git
+cd noteslashv2
+
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env.local
 ```
 
-Required in `backend/.env`:
-- `OPENAI_API_KEY`
-- `SUPABASE_URL`
-- `SUPABASE_SERVICE_ROLE_KEY`
+Fill in `backend/.env`:
 
-Optional:
-- `OPENAI_REALTIME_MODEL=gpt-realtime`
-- `OPENAI_WHISPER_MODEL=whisper-1`
-- `MAX_AUDIO_SIZE_MB=25`
+```env
+OPENAI_API_KEY=...
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=...
+CORS_ORIGINS=http://localhost:3000
+```
 
-### 2. Database migrations
+Set `NEXT_PUBLIC_API_URL=http://localhost:8000` in `frontend/.env.local`.
 
-Run in Supabase SQL Editor, in order:
+### 2. Database
+
+Run these in the Supabase SQL Editor, in order:
 
 1. `supabase/migrations/001_enable_pgvector.sql`
 2. `supabase/migrations/002_initial_schema.sql`
@@ -51,59 +61,68 @@ Run in Supabase SQL Editor, in order:
 
 ### 3. Run locally
 
-```bash
-# Backend
-cd backend
-.venv\Scripts\uvicorn app.main:app --reload --port 8000
+**Backend:**
 
-# Frontend
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate          # Windows
+# source .venv/bin/activate     # macOS/Linux
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
+
+**Frontend:**
+
+```bash
 cd frontend
+npm install
 npm run dev
 ```
 
-Open http://localhost:3000
+Open [http://localhost:3000](http://localhost:3000).
 
 ### 4. Verify
 
 ```bash
 cd backend
-.venv\Scripts\python scripts\verify_setup.py
-.venv\Scripts\pytest
+python scripts/verify_setup.py
+pytest
 ```
 
 ## Usage
 
-1. **Start a library** — upload audio or text
-2. Wait for processing (transcribe → categorize → index → insights)
-3. **Overview** — read summary and key points
-4. **Chat** — ask questions with cited answers
-5. **Voice** — click Start voice, allow mic, speak naturally
-6. **Report** — generate and download markdown
+1. Create a **library** and upload audio or text (or use **Try sample content** on the homepage).
+2. Wait for processing: categorize → index → extract insights.
+3. Use **Overview**, **Chat**, **Voice**, or **Report** tabs in the workspace.
 
-## Voice requirements
+Voice requires HTTPS in production and microphone permission in the browser.
 
-- OpenAI account with **Realtime API** access
-- Browser with microphone permission
-- HTTPS in production (required for mic on most browsers)
+## Deployment
 
-## Deploy
+| Service | Root directory | Notes |
+|---------|----------------|-------|
+| **Frontend** (e.g. Vercel) | `frontend` | Set `NEXT_PUBLIC_API_URL` to your API URL |
+| **Backend** (e.g. Railway) | `backend` | Set env from `backend/.env.example`; `CORS_ORIGINS` = frontend URL |
 
-- **Frontend:** Vercel, root `frontend`, set `NEXT_PUBLIC_API_URL`
-- **Backend:** Railway/Render, root `backend`, set env vars + `CORS_ORIGINS`
+Start command (Railway): `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 
-## Architecture and video
+## Documentation
 
-- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — deployment diagrams, pipelines, API map, DB schema
-- **[docs/VIDEO_SCRIPT.md](docs/VIDEO_SCRIPT.md)** — 3–4 min walkthrough script
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — system design, data flows, API reference, database schema
 
-## Project structure
+## Project layout
 
 ```
-backend/app/
-  services/   transcription, categorization, chat, realtime, pipeline
-  routes/     projects, voice
-frontend/
-  components/ chat-panel, voice-panel
-supabase/migrations/
-backend/sample-data/  text samples for "Try sample content"
+noteslashv2/
+├── frontend/           # Next.js app
+├── backend/            # FastAPI API
+│   ├── app/            # routes, services, agents
+│   └── sample-data/    # bundled samples for /api/projects/sample
+├── supabase/migrations/
+└── docs/
 ```
+
+## License
+
+MIT — see [LICENSE](LICENSE).
